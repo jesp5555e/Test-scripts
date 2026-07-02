@@ -40,6 +40,18 @@ else
         exit 1
     fi
 fi
+# 3. Implementering Rettigheds-politik
+# Her definerer vi reglen: <Hostname>-ADMIN gruppen får fuld sudo uden password
+echo "[Policy] Konfigurerer automatiske rettigheder..."
+sudo_rule="%$(hostname)-ADMIN ALL=(ALL) NOPASSWD:ALL"
+
+echo "$sudo_rule" > /etc/sudoers.d/ad-policy
+chmod 440 /etc/sudoers.d/ad-policy
+
+# Vi gør det samme for SSH-gruppen, hvis du vil have dem til at kunne logge ind via SSH
+# (Dette kræver at sshd er konfigureret til at tillade AD-brugere)
+echo "AllowGroups %$(hostname)-SSH %$(hostname)-ADMIN" > /etc/ssh/sshd_config.d/ad-access.conf
+systemctl restart ssh
 
 # 4. DDNS Opdatering
 echo "[3/5] Opdaterer DNS-record i AD..."
