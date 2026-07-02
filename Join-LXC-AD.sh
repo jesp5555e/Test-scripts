@@ -40,7 +40,7 @@ else
         exit 1
     fi
 fi
-# 3. Implementering Rettigheds-politik
+# 4. Implementering Rettigheds-politik
 # Her definerer vi reglen: <Hostname>-ADMIN gruppen får fuld sudo uden password
 echo "[Policy] Konfigurerer automatiske rettigheder..."
 sudo_rule="%$(hostname)-ADMIN ALL=(ALL) NOPASSWD:ALL"
@@ -53,7 +53,7 @@ chmod 440 /etc/sudoers.d/ad-policy
 echo "AllowGroups %$(hostname)-SSH %$(hostname)-ADMIN" > /etc/ssh/sshd_config.d/ad-access.conf
 systemctl restart ssh
 
-# 4. DDNS Opdatering
+# 5. DDNS Opdatering
 echo "[3/5] Opdaterer DNS-record i AD..."
 adcli update --domain="$DOMAIN"
 
@@ -63,7 +63,7 @@ else
     echo "Advarsel: Kunne ikke opdatere DNS-record."
 fi
 
-# 5. Opsætning af automatisk DDNS ved boot
+# 6. Opsætning af automatisk DDNS ved boot
 echo "[4/5] Opsætter automatisk DNS-opdatering ved boot..."
 CRON_JOB="@reboot /usr/bin/adcli update --domain=$DOMAIN"
 # Tjek om jobbet allerede findes i crontab for at undgå dubletter
