@@ -7,7 +7,7 @@
 # ==============================================================================
 
 # --- KONFIGURATION ---
-DOMAIN="ad.jesperhdgaming.dk"
+DOMAIN="AD.JesperHDgaming.dk"
 ADMIN_USER="Administrator"
 # ---------------------
 
@@ -43,15 +43,17 @@ fi
 # 4. Implementering Rettigheds-politik
 # Her definerer vi reglen: <Hostname>-ADMIN gruppen får fuld sudo uden password
 echo "[Policy] Konfigurerer automatiske rettigheder..."
-sudo_rule="%$(hostname)-ADMIN ALL=(ALL) NOPASSWD:ALL"
+sudo_rule="%$(hostname)-admin@$DOMAIN ALL=(ALL:ALL) ALL"
 
 echo "$sudo_rule" > /etc/sudoers.d/ad-policy
 chmod 440 /etc/sudoers.d/ad-policy
 
 # Vi gør det samme for SSH-gruppen, hvis du vil have dem til at kunne logge ind via SSH
 # (Dette kræver at sshd er konfigureret til at tillade AD-brugere)
-echo "AllowGroups %$(hostname)-SSH %$(hostname)-ADMIN" > /etc/ssh/sshd_config.d/ad-access.conf
+echo "AllowGroups $(hostname)-ssh@$DOMAIN $(hostname)-admin@$DOMAIN" > /etc/ssh/sshd_config.d/ad-access.conf
 systemctl restart ssh
+
+sudo sed -i '/session\s*.*pam_unix.so/i session required        pam_mkhomedir.so' /etc/pam.d/common-session
 
 # 5. DDNS Opdatering
 echo "[3/5] Opdaterer DNS-record i AD..."
