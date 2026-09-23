@@ -9,6 +9,7 @@
 # --- KONFIGURATION ---
 DOMAIN="AD.JesperHDgaming.dk"
 ADMIN_USER="Administrator"
+TARGET_OU="OU=Linux,OU=Servers,OU=JesperHDgaming,DC=AD,DC=JesperHDgaming,DC=dk"
 # ---------------------
 
 # Tjek om scriptet køres som root
@@ -31,7 +32,7 @@ else
     # 3. Join domænet
     echo "[2/5] Joiner domænet $DOMAIN..."
     echo "Du vil nu blive bedt om password til $ADMIN_USER"
-    realm join -U "$ADMIN_USER" "$DOMAIN"
+    realm join --computer-ou="$TARGET_OU" -U "$ADMIN_USER" "$DOMAIN"
     
     if [ $? -eq 0 ]; then
         echo "Succes: Maskinen er nu joinet til $DOMAIN."
